@@ -11,10 +11,8 @@ param(
 )
 
 # Parse root directory
-$_ = $MyInvocation.MyCommand.Path -split "\\"
-$Path = $_[0..($_.Length-2)] -join "\"
-#$Path = $Path -split "\\"
-#$Path = $Path[0..($Path.Length-2)] -join "\"
+$Path = $MyInvocation.MyCommand.Path -split "\\"
+$Path = $Path[0..($Path.Length-2)] -join "\"
 
 Import-Module -Name "$Path\modules\AsAdmin" #-Verbose
 Import-Module -Name "$Path\modules\SetAdmin" #-Verbose
