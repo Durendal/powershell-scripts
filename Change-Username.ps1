@@ -33,29 +33,29 @@ $RegistryPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\
 
 # Change currently set username to $NewName
 function Change-Username($OldName, $NewName) {
-  Colour-Text 2 "Changing $OldName to $NewName one moment..."
+  Colour-Text 1 "Changing $OldName to $NewName one moment..."
   Rename-LocalUser -Name $OldName -NewName $NewName -ErrorAction Stop
 }
 
 # Change currently set home directory to $NewDir
 function Change-HomeDirectory($OldDir, $NewDir) {
-  Colour-Text 2 "Changing $OldDir to $NewDir, one moment..."
+  Colour-Text 1 "Changing $OldDir to $NewDir, one moment..."
   Rename-Item $OldDir $NewDir -ErrorAction Stop
 }
 
 # Update path to users home directory in registry by appending $UserName to C:\Users\
 function Update-Registry($SID, $UserName) {
-  Colour-Text 2 "Updating $UserName's home directory in Registry, one moment..."
+  Colour-Text 1 "Updating $UserName's home directory in Registry, one moment..."
   Set-Itemproperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$SID" -Name 'ProfileImagePath' -value "C:\Users\$UserName" -ErrorAction Stop
 }
 
 # Update the users password
 function Change-Password($UserName, $Pass) {
-  Colour-Text 2 "Updating $UserName's password, one moment..."
+  Colour-Text 1 "Updating $UserName's password, one moment..."
   Set-LocalUser -Name $UserName -Password $Pass -ErrorAction Stop
 }
 
-Colour-Text 2 "Beginning user-migration sequence for Username: $OldUserName SID: $UserSID, one moment..."
+Colour-Text 1 "Beginning user-migration sequence for Username: $OldUserName SID: $UserSID, one moment..."
 
 # Verify the user profile exists in registry
 if(Test-Path $RegistryPath)

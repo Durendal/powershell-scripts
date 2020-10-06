@@ -23,15 +23,15 @@ Import-Module -Name "$Path\modules\ColourText"
 
 # Elevate to admin priveleges
 As-Admin $Path "Delete-Admin.ps1" "-Username", $Username, $(If($RemoveHomeDir.IsPresent) { "-RemoveHomeDir" } Else { "" })
-Colour-Text 2 "Removing $Username from the Administrators group"
+Colour-Text 1 "Removing $Username from the Administrators group"
 Set-Admin $Username $False
-Colour-Text 2 "Removing user $Username, one moment..."
+Colour-Text 1 "Removing user $Username, one moment..."
 Remove-LocalUser -Name $Username -ErrorAction Stop
 
 if($RemoveHomeDir.IsPresent)
 {
   $HomeDir = "C:\Users\$Username"
-  Colour-Text 2 "Removing $Username's home directory: $HomeDir"
+  Colour-Text 1 "Removing $Username's home directory: $HomeDir"
   Remove-Item -path $HomeDir -Recurse -Force -ErrorAction Stop
 }
 
