@@ -5,7 +5,7 @@
     .DESCRIPTION
       Takes a message type -  1: Info
                               2: Debug
-                              3: Debug
+                              3: Warning
                               4: Error
       and a message to print
 #>
