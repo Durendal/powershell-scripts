@@ -20,14 +20,11 @@ $Path = $Path[0..($Path.Length-2)] -join "\"
 Import-Module -Name "$Path\modules\AsAdmin" #-Verbose
 Import-Module -Name "$Path\modules\SetAdmin" #-Verbose
 
-Write-Output "$($RemoveHomeDir.IsPresent)"
-
 # Elevate to admin priveleges
 As-Admin $Path "Delete-Admin.ps1" "-Username", $Username, $(If($RemoveHomeDir.IsPresent) { "-RemoveHomeDir" } Else { "" })
 Set-Admin $Username $False
 Write-Output "Removing user $Username, one moment..."
 Remove-LocalUser -Name $Username -ErrorAction Stop
-Write-Output "Remove Home Directory: $($RemoveHomeDir.IsPresent)"
 
 if($RemoveHomeDir.IsPresent)
 {
