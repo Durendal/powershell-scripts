@@ -20,6 +20,7 @@ $Path = $Path -split "\\"
 $Path = $Path[0..($Path.Length-2)] -join "\"
 Import-Module -Name "$Path\modules\AsAdmin" #-Verbose
 Import-Module -Name "$Path\modules\ColourText"
+
 # Elevate Priveleges
 As-Admin $Path "Change-Username.ps1" "-OldUserName", $OldUserName, "-NewUserName", $NewUserName
 
@@ -97,4 +98,4 @@ else
   Colour-Text 3 "Unable to locate user: $OldUserName SID: $UserSID in the registry. Please investigate."
 }
 
-Colour-Text 2 "Press enter to exit... "
+Read-Host "Press enter to exit... "

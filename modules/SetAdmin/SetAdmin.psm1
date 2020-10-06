@@ -21,12 +21,10 @@ function Set-Admin {
   )
   if($Admin -eq $true)
   {
-    Write-Output "Adding $Username to Administrators group"
     Add-LocalGroupMember -Group "Administrators" -Member $Username -ErrorAction Stop | Out-Null
   }
   else
   {
-    Write-Output "Removing $Username from Administrators group"
     Remove-LocalGroupMember -Group "Administrators" -Member $Username -ErrorAction Stop
   }
 }
