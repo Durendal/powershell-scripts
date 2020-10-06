@@ -19,7 +19,7 @@ $Path = $MyInvocation.MyCommand.Path
 $Path = $Path -split "\\"
 $Path = $Path[0..($Path.Length-2)] -join "\"
 Import-Module -Name "$Path\modules\AsAdmin" #-Verbose
-
+Import-Module -Name "$Path\modules\ColourText"
 # Elevate Priveleges
 As-Admin $Path "Change-Username.ps1" "-OldUserName", $OldUserName, "-NewUserName", $NewUserName
 
@@ -32,29 +32,29 @@ $RegistryPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\
 
 # Change currently set username to $NewName
 function Change-Username($OldName, $NewName) {
-  Write-Output "Changing $OldName to $NewName one moment..."
+  Colour-Text 2 "Changing $OldName to $NewName one moment..."
   Rename-LocalUser -Name $OldName -NewName $NewName -ErrorAction Stop
 }
 
 # Change currently set home directory to $NewDir
 function Change-HomeDirectory($OldDir, $NewDir) {
-  Write-Output "Changing $OldDir to $NewDir, one moment..."
+  Colour-Text 2 "Changing $OldDir to $NewDir, one moment..."
   Rename-Item $OldDir $NewDir -ErrorAction Stop
 }
 
 # Update path to users home directory in registry by appending $UserName to C:\Users\
 function Update-Registry($SID, $UserName) {
-  Write-Output "Updating $UserName's home directory in Registry, one moment..."
+  Colour-Text 2 "Updating $UserName's home directory in Registry, one moment..."
   Set-Itemproperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$SID" -Name 'ProfileImagePath' -value "C:\Users\$UserName" -ErrorAction Stop
 }
 
 # Update the users password
 function Change-Password($UserName, $Pass) {
-  Write-Output "Updating $UserName's password, one moment..."
+  Colour-Text 2 "Updating $UserName's password, one moment..."
   Set-LocalUser -Name $UserName -Password $Pass -ErrorAction Stop
 }
 
-Write-Output "Beginning user-migration sequence for Username: $OldUserName SID: $UserSID, one moment..."
+Colour-Text 2 "Beginning user-migration sequence for Username: $OldUserName SID: $UserSID, one moment..."
 
 # Verify the user profile exists in registry
 if(Test-Path $RegistryPath)
@@ -90,11 +90,11 @@ if(Test-Path $RegistryPath)
   catch{
     throw "Failed to update password. Login with old password and change manually."
   }
-  Write-Output "Finished. Log out and back in with $NewUserName"
+  Colour-Text 1 "Finished. Log out and back in with $NewUserName"
 }
 else
 {
-  Write-Output "Unable to locate user: $OldUserName SID: $UserSID in the registry. Please investigate."
+  Colour-Text 3 "Unable to locate user: $OldUserName SID: $UserSID in the registry. Please investigate."
 }
 
-Read-Host "Press enter to exit... "
+Colour-Text 2 "Press enter to exit... "
