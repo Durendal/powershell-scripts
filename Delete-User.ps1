@@ -10,7 +10,8 @@
 #>
 param(
   [string] $Username = "bhewitt",
-  [switch] $RemoveHomeDir = $False
+  [switch] $RemoveHomeDir = $False,
+  [switch] $Admin = $False
 )
 
 # Parse root directory
@@ -22,9 +23,12 @@ Import-Module -Name "$Path\modules\SetAdmin" #-Verbose
 Import-Module -Name "$Path\modules\ColourText"
 
 # Elevate to admin priveleges
-As-Admin $Path "Delete-Admin.ps1" "-Username", $Username, $(If($RemoveHomeDir.IsPresent) { "-RemoveHomeDir" } Else { "" })
-Colour-Text 1 "Removing $Username from the Administrators group"
-Set-Admin $Username $False
+As-Admin $Path "Delete-Admin.ps1" "-Username", $Username, $(If($RemoveHomeDir.IsPresent) { "-RemoveHomeDir" } Else { "" }), $(If($Admin.IsPresent) { "-Admin" } Else { "" })
+if($Admin.IsPresent)
+{
+  Colour-Text 1 "Removing $Username from the Administrators group"
+  Set-Admin $Username $False
+}
 Colour-Text 1 "Removing user $Username, one moment..."
 Remove-LocalUser -Name $Username -ErrorAction Stop
 
