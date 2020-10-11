@@ -61,11 +61,7 @@ class User {
   }
 
   [void] SetUsername([string] $NewName) {
-    Write-Host "Current Name: $($this.GetUsername())"
-    Write-Host "New Name: $NewName"
-
     if($this.GetUsername() -ne $NewName) {
-      Write-Host "Setting new name"
       Rename-LocalUser -Name $this.GetUsername() -NewName $NewName -ErrorAction Stop
       $this._self = Get-LocalUser -SID $this.GetSID()
     }
@@ -93,28 +89,3 @@ class User {
     $this.SetPassword($(ConvertTo-SecureString $Password -AsPlainText -Force))
   }
 }
-
-
-$test = [User]::new('testuser')
-
-Write-Output $test.GetUsername()
-Write-Output $test.GetHomeDir()
-Write-Output $test.GetSID()
-Write-Output $test.GetIsAdmin()
-$password = Read-Host "Password:" -AsSecureString
-$test.SetUsername('newtestuser')
-$test.SetHomeDir('C:\Users\newtestuser')
-$test.SetPassword($password)
-$test.SetAdmin($True)
-
-Write-Output $test.GetUsername()
-Write-Output $test.GetHomeDir()
-Write-Output $test.GetSID()
-
-$test = [User]::new('S-1-5-21-502693341-1260256537-746645574-1003')
-Write-Output $test.GetUsername()
-Write-Output $test.GetHomeDir()
-Write-Output $test.GetSID()
-
-Write-Output $test.GetIsAdmin()
-#Write-Output $($users[0].PartComponent -split ",")[-1]
