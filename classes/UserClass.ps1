@@ -1,3 +1,4 @@
+ Start-Sleep -Milliseconds 1
 # Parse root directory
 $Path = $MyInvocation.MyCommand.Path -split "\\"
 $Path = $Path[0..($Path.Length-3)] -join "\"
@@ -17,13 +18,11 @@ class User {
         $this._self = Get-LocalUser -Name $Identifier -ErrorAction Stop
       }
     }
-    Catch [Microsoft.PowerShell.Commands.UserNotFoundException]
+    catch #[Microsoft.PowerShell.Commands.NotFoundException], [Microsoft.PowerShell.Commands.UserNotFoundException]
     {
-      "User or SID: $Identifier does not exist." | Write-Error
-      Exit
-    }
-    Catch
-    {
+      #Write-Host $error[0].exception
+      #Write-Host $error[4] | (Select –Property *)
+      Write-Host $Error[0] | fl * -Force
       Write-Host $_.Exception.GetType().Name
       Write-Host $error[0].exception.gettype().fullname
       Exit
@@ -61,6 +60,7 @@ class User {
   }
 
   [void] SetUsername([string] $NewName) {
+
     if($this.GetUsername() -ne $NewName) {
       Rename-LocalUser -Name $this.GetUsername() -NewName $NewName -ErrorAction Stop
       $this._self = Get-LocalUser -SID $this.GetSID()
@@ -89,3 +89,28 @@ class User {
     $this.SetPassword($(ConvertTo-SecureString $Password -AsPlainText -Force))
   }
 }
+
+
+$test = [User]::new('testuser')
+
+Write-Output $test.GetUsername()
+Write-Output $test.GetHomeDir()
+Write-Output $test.GetSID()
+Write-Output $test.GetIsAdmin()
+$password = Read-Host "Password:" -AsSecureString
+$test.SetUsername('newtestuser')
+$test.SetHomeDir('C:\Users\newtestuser')
+$test.SetPassword($password)
+$test.SetAdmin($True)
+
+Write-Output $test.GetUsername()
+Write-Output $test.GetHomeDir()
+Write-Output $test.GetSID()
+
+$test = [User]::new('S-1-5-21-502693341-1260256537-746645574-1003')
+Write-Output $test.GetUsername()
+Write-Output $test.GetHomeDir()
+Write-Output $test.GetSID()
+
+Write-Output $test.GetIsAdmin()
+#Write-Output $($users[0].PartComponent -split ",")[-1]
