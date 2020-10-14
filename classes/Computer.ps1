@@ -3,18 +3,20 @@ Start-Sleep -Milliseconds 1
 $Path = $MyInvocation.MyCommand.Path -split "\\"
 $Path = $Path[0..($Path.Length-3)] -join "\"
 
-Import-Module -Name "$Path\modules\SetAdmin" #-Verbose
-
 class Computer {
   [string] $SID
 
   Computer() {
-    $sid = $(get-localuser)[0].SID.Value
-    $this.SID = $sid.Substring(0, $sid.Length-4)
+    $s = $(get-localuser)[0].SID.Value
+    $this.SID = $s.Substring(0, $s.Length-4)
   }
 
   [void] CreateRestorePoint([string] $Description="Creating system restore point", [string] $Type = "MODIFY_SETTINGS") {
     Checkpoint-Computer -Description $Description -RestorePointType $Type
+  }
+
+  [string] GetSID() {
+    return $this.SID
   }
 
   [string] GetHostname() {
