@@ -14,7 +14,7 @@ class Computer {
   }
 
   [void] CreateRestorePoint([string] $Description="Creating system restore point", [string] $Type = "MODIFY_SETTINGS") {
-    Checkpoint-Computer -Description "Testing powershell checkpoint" -RestorePointType $Type
+    Checkpoint-Computer -Description $Description -RestorePointType $Type
   }
 
   [string] GetHostname() {
