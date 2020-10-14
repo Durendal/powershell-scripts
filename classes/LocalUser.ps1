@@ -110,11 +110,15 @@ class LocalUser {
   }
 
   [void] Enable() {
-    Get-LocalUser -Name $this.GetUsername() | Enable-LocalUser
+    if(!$this.IsEnabled()){
+      Get-LocalUser -Name $this.GetUsername() | Enable-LocalUser
+    }
   }
 
   [void] Disable() {
-    Get-LocalUser -Name $this.GetUsername() | Disable-LocalUser
+    if($this.IsEnabled()) {
+      Get-LocalUser -Name $this.GetUsername() | Disable-LocalUser
+    }
   }
 
   [string] GetFullName() {

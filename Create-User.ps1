@@ -8,7 +8,9 @@
 param(
   $Username = "bhewitt",
   $FullName = "Brian Hewitt",
-  [switch] $Admin = $False
+  $Description = "",
+  [switch] $Admin = $False,
+  [switch] $Enabled = $False
 )
 
 # Parse root directory
@@ -27,6 +29,8 @@ Colour-Text 1 "Creating user $Username, one moment..."
 
 $user = [LocalUser]::new($Username, $Password)
 $user.SetFullName($FullName)
+$user.SetDescription($Description)
+if($Enabled) { $user.Enable() } else { $user.Disable() }
 if($Admin.IsPresent) {
   Colour-Text 1 "Adding $Username to the Administrators group"
   $user.GrantAdmin()
