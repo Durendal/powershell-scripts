@@ -10,6 +10,7 @@ class User {
   [string] $_registry
   [string] $HomeDirPath
 
+  # Pull an existing user constructor
   User([string] $Identifier){
     try {
       if($(Select-String -Pattern 'S-\d-(?:\d+-){1,14}\d+' -InputObject $Identifier).Matches) {
@@ -30,6 +31,12 @@ class User {
 
     $this._registry = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$($this.GetSID())"
     $this.HomeDirPath = $(Get-ItemProperty -path $this._registry).ProfileImagePath
+  }
+
+  # Create a new user constructor
+  User([string] $Username, [System.Security.SecureString] $Password) {
+    New-LocalUser -Name $Username -Password $Password
+    User($Username)
   }
 
   [string] GetUsername() {
@@ -77,8 +84,16 @@ class User {
 
   [void] SetAdmin([bool] $IsAdmin) {
     if(!$this.GetIsAdmin() -eq $IsAdmin){
-      Set-Admin $this._self.Name $IsAdmin
+      Set-Admin $this.GetUsername() $IsAdmin
     }
+  }
+
+  [void] GrantAdmin() {
+    $this.SetAdmin($True)
+  }
+
+  [void] RevokeAdmin() {
+    $this.SetAdmin($False)
   }
 
   [void] SetPassword([Security.SecureString] $Password) {
@@ -89,28 +104,3 @@ class User {
     $this.SetPassword($(ConvertTo-SecureString $Password -AsPlainText -Force))
   }
 }
-
-
-$test = [User]::new('testuser')
-
-Write-Output $test.GetUsername()
-Write-Output $test.GetHomeDir()
-Write-Output $test.GetSID()
-Write-Output $test.GetIsAdmin()
-$password = Read-Host "Password:" -AsSecureString
-$test.SetUsername('newtestuser')
-$test.SetHomeDir('C:\Users\newtestuser')
-$test.SetPassword($password)
-$test.SetAdmin($True)
-
-Write-Output $test.GetUsername()
-Write-Output $test.GetHomeDir()
-Write-Output $test.GetSID()
-
-$test = [User]::new('S-1-5-21-502693341-1260256537-746645574-1003')
-Write-Output $test.GetUsername()
-Write-Output $test.GetHomeDir()
-Write-Output $test.GetSID()
-
-Write-Output $test.GetIsAdmin()
-#Write-Output $($users[0].PartComponent -split ",")[-1]
