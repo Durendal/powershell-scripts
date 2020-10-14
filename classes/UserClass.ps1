@@ -8,7 +8,6 @@ Import-Module -Name "$Path\modules\SetAdmin" #-Verbose
 class User {
   [object] $_self
   [string] $_registry
-  [string] $HomeDirPath
 
   # Pull an existing user constructor
   User([string] $Identifier){
@@ -30,7 +29,6 @@ class User {
     }
 
     $this._registry = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$($this.GetSID())"
-    $this.HomeDirPath = $(Get-ItemProperty -path $this._registry).ProfileImagePath
   }
 
   # Create a new user constructor
@@ -48,7 +46,7 @@ class User {
   }
 
   [string] GetHomeDir() {
-    return $this.HomeDirPath
+    return $(Get-ItemProperty -path $this._registry).ProfileImagePath
   }
 
   [bool] GetIsAdmin() {
@@ -67,7 +65,6 @@ class User {
   }
 
   [void] SetUsername([string] $NewName) {
-
     if($this.GetUsername() -ne $NewName) {
       Rename-LocalUser -Name $this.GetUsername() -NewName $NewName -ErrorAction Stop
       $this._self = Get-LocalUser -SID $this.GetSID()
@@ -78,7 +75,6 @@ class User {
     if($this.GetHomeDir() -ne $DirName){
       Rename-Item $this.GetHomeDir() $DirName -ErrorAction Stop
       Set-Itemproperty -path $this._registry -Name 'ProfileImagePath' -value $DirName -ErrorAction Stop
-      $this.HomeDirPath = $(Get-ItemProperty -path $this._registry).ProfileImagePath
     }
   }
 
@@ -108,4 +104,17 @@ class User {
     Get-LocalUser -Name $this.GetUsername() | Remove-LocalUser
     $this._self = $NULL
   }
+
+  [bool] IsEnabled() {
+    return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty Enabled)
+  }
+
+  [void] Enable() {
+    Get-LocalUser -Name $this.GetUsername() | Enable-LocalUser
+  }
+
+  [void] Disable() {
+    Get-LocalUser -Name $this.GetUsername() | Disable-LocalUser
+  }
+
 }
