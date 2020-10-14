@@ -6,16 +6,16 @@ $Path = $Path[0..($Path.Length-3)] -join "\"
 Import-Module -Name "$Path\modules\SetAdmin" #-Verbose
 
 class LocalUser {
-  [object] $_self
+  [object] $SID
   [string] $_registry
 
   # Pull an existing user constructor
   LocalUser([string] $Identifier){
     try {
       if($(Select-String -Pattern 'S-\d-(?:\d+-){1,14}\d+' -InputObject $Identifier).Matches) {
-        $this._self = Get-LocalUser -SID $Identifier -ErrorAction Stop
+        $this.SID = $(Get-LocalUser -SID $Identifier -ErrorAction Stop).SID
       } else {
-        $this._self = Get-LocalUser -Name $Identifier -ErrorAction Stop
+        $this.SID = $(Get-LocalUser -Name $Identifier -ErrorAction Stop).SID
       }
     }
     catch #[Microsoft.PowerShell.Commands.NotFoundException], [Microsoft.PowerShell.Commands.UserNotFoundException]
@@ -38,11 +38,11 @@ class LocalUser {
   }
 
   [string] GetUsername() {
-    return $this._self.Name
+    return $(Get-LocalUser -SID $this.GetSID()).Name
   }
 
   [string] GetSID() {
-    return $this._self.SID.Value
+    return $this.SID.Value
   }
 
   [string] GetHomeDir() {
@@ -67,7 +67,6 @@ class LocalUser {
   [void] SetUsername([string] $NewName) {
     if($this.GetUsername() -ne $NewName) {
       Rename-LocalUser -Name $this.GetUsername() -NewName $NewName -ErrorAction Stop
-      $this._self = Get-LocalUser -SID $this.GetSID()
     }
   }
 
@@ -102,7 +101,6 @@ class LocalUser {
 
   [void] Remove() {
     Get-LocalUser -Name $this.GetUsername() | Remove-LocalUser
-    $this._self = $NULL
   }
 
   [bool] IsEnabled() {
@@ -137,23 +135,23 @@ class LocalUser {
     Get-LocalUser -Name $this.GetUsername() | Set-LocalUser -Description $Description
   }
 
-  [string] GetAccountExpires() {
+  [System.Nullable[datetime]] GetAccountExpires() {
     return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty AccountExpires)
   }
 
-  [string] GetLastLogon() {
+  [System.Nullable[datetime]] GetLastLogon() {
     return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty LastLogon)
   }
 
-  [string] GetPasswordChangeableDate() {
+  [System.Nullable[datetime]] GetPasswordChangeableDate() {
     return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty PasswordChangeableDate)
   }
 
-  [string] GetPasswordExpires() {
+  [System.Nullable[datetime]] GetPasswordExpires() {
     return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty PasswordExpires)
   }
 
-  [string] GetPasswordLastSet() {
+  [System.Nullable[datetime]] GetPasswordLastSet() {
     return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty PasswordLastSet)
   }
 
@@ -161,6 +159,7 @@ class LocalUser {
     return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty PasswordRequired)
   }
 
+  #[System.Nullable[PrincipalSource]] GetPrincipalSource() {
   [string] GetPrincipalSource() {
     return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty PrincipalSource)
   }
