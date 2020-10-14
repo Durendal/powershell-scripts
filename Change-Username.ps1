@@ -18,7 +18,7 @@ param(
 $Path = $MyInvocation.MyCommand.Path
 $Path = $Path -split "\\"
 $Path = $Path[0..($Path.Length-2)] -join "\"
-Import-Module -Name "$Path\classes\UserClass.ps1"
+Import-Module -Name "$Path\classes\LocalUser.ps1"
 Import-Module -Name "$Path\modules\AsAdmin"
 Import-Module -Name "$Path\modules\ColourText"
 
@@ -26,7 +26,7 @@ Import-Module -Name "$Path\modules\ColourText"
 As-Admin $Path "Change-Username.ps1" "-OldUserName", $OldUserName, "-NewUserName", $NewUserName
 
 $Password = Read-Host "Enter Password" -AsSecureString
-$user = [User]::new($OldUserName)
+$user = [LocalUser]::new($OldUserName)
 Colour-Text 1 "Beginning user-migration sequence for Username: $OldUserName SID: $UserSID, one moment..."
 
 try {

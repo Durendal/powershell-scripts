@@ -20,11 +20,11 @@ $Path = $Path -split "\\"
 $Path = $Path[0..($Path.Length-2)] -join "\"
 Import-Module -Name "$Path\modules\AsAdmin" #-Verbose
 Import-Module -Name "$Path\modules\ColourText"
-Import-Module -Name "$Path\classes\UserClass.ps1"
+Import-Module -Name "$Path\classes\LocalUser.ps1"
 
 # Elevate to admin priveleges
 As-Admin $Path "Delete-Admin.ps1" "-Username", $Username, $(If($RemoveHomeDir.IsPresent) { "-RemoveHomeDir" } Else { "" }), $(If($Admin.IsPresent) { "-Admin" } Else { "" })
-$user = [User]::new($Username)
+$user = [LocalUser]::new($Username)
 
 if($Admin.IsPresent -and $user.GetIsAdmin())
 {

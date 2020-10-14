@@ -5,12 +5,12 @@ $Path = $Path[0..($Path.Length-3)] -join "\"
 
 Import-Module -Name "$Path\modules\SetAdmin" #-Verbose
 
-class User {
+class LocalUser {
   [object] $_self
   [string] $_registry
 
   # Pull an existing user constructor
-  User([string] $Identifier){
+  LocalUser([string] $Identifier){
     try {
       if($(Select-String -Pattern 'S-\d-(?:\d+-){1,14}\d+' -InputObject $Identifier).Matches) {
         $this._self = Get-LocalUser -SID $Identifier -ErrorAction Stop
@@ -32,9 +32,9 @@ class User {
   }
 
   # Create a new user constructor
-  User([string] $Username, [System.Security.SecureString] $Password) {
+  LocalUser([string] $Username, [System.Security.SecureString] $Password) {
     New-LocalUser -Name $Username -Password $Password -ErrorAction Stop
-    User($Username)
+    LocalUser($Username)
   }
 
   [string] GetUsername() {
