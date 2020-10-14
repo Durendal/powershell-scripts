@@ -105,7 +105,7 @@ class User {
   }
 
   [void] Remove() {
-    Get-LocalUser -Name $this.GetUserName() | Remove-LocalUser
+    Get-LocalUser -Name $this.GetUsername() | Remove-LocalUser
     $this._self = $NULL
   }
 }
