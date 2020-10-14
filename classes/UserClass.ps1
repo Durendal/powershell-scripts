@@ -35,7 +35,7 @@ class User {
 
   # Create a new user constructor
   User([string] $Username, [System.Security.SecureString] $Password) {
-    New-LocalUser -Name $Username -Password $Password
+    New-LocalUser -Name $Username -Password $Password -ErrorAction Stop
     User($Username)
   }
 
