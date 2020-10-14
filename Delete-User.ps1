@@ -26,7 +26,7 @@ Import-Module -Name "$Path\classes\UserClass.ps1"
 As-Admin $Path "Delete-Admin.ps1" "-Username", $Username, $(If($RemoveHomeDir.IsPresent) { "-RemoveHomeDir" } Else { "" }), $(If($Admin.IsPresent) { "-Admin" } Else { "" })
 $user = [User]::new($Username)
 
-if($Admin.IsPresent -and $user.IsAdmin())
+if($Admin.IsPresent -and $user.GetIsAdmin())
 {
   Colour-Text 1 "Removing $Username from the Administrators group"
   $user.RevokeAdmin()
