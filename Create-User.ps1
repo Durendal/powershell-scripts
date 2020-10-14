@@ -16,17 +16,20 @@ $Path = $MyInvocation.MyCommand.Path -split "\\"
 $Path = $Path[0..($Path.Length-2)] -join "\"
 
 Import-Module -Name "$Path\modules\AsAdmin" #-Verbose
-Import-Module -Name "$Path\modules\SetAdmin" #-Verbose
 Import-Module -Name "$Path\modules\ColourText"
+Import-Module -Name "$Path\classes\UserClass.ps1"
 
 # Elevate to admin priveleges
 As-Admin $Path "Create-User.ps1" "-Username", $Username, "-FullName", $FullName, $(If($Admin.IsPresent) { "-Admin" } Else { "" })
 $Password = Read-Host "Enter Password" -AsSecureString
+
 Colour-Text 1 "Creating user $Username, one moment..."
-New-LocalUser -Name $Username -Password $Password -FullName $FullName -ErrorAction Stop | Out-Null
+
+$user = [User]::new($Username, $Password)
+$user.SetFullName($FullName)
 if($Admin.IsPresent) {
   Colour-Text 1 "Adding $Username to the Administrators group"
-  Set-Admin $Username $True
+  $user.GrantAdmin()
 }
 Colour-Text 1 "Finished. Log out and back in with $Username"
 

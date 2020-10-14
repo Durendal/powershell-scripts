@@ -117,4 +117,52 @@ class User {
     Get-LocalUser -Name $this.GetUsername() | Disable-LocalUser
   }
 
+  [string] GetFullName() {
+    return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty FullName)
+  }
+
+  [void] SetFullName([string] $FullName) {
+    Get-LocalUser -Name $this.GetUsername() | Set-LocalUser -FullName $FullName
+  }
+
+  [string] GetDescription() {
+    return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty Description)
+  }
+
+  [void] SetDescription([string] $Description) {
+    Get-LocalUser -Name $this.GetUsername() | Set-LocalUser -Description $Description
+  }
+
+  [string] GetAccountExpires() {
+    return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty AccountExpires)
+  }
+
+  [string] GetLastLogon() {
+    return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty LastLogon)
+  }
+
+  [string] GetPasswordChangeableDate() {
+    return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty PasswordChangeableDate)
+  }
+
+  [string] GetPasswordExpires() {
+    return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty PasswordExpires)
+  }
+
+  [string] GetPasswordLastSet() {
+    return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty PasswordLastSet)
+  }
+
+  [bool] GetPasswordRequired() {
+    return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty PasswordRequired)
+  }
+
+  [string] GetPrincipalSource() {
+    return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty PrincipalSource)
+  }
+
+  [bool] GetUserMayChangePassword() {
+    return $(Get-LocalUser -Name $this.GetUsername() | select -ExpandProperty UserMayChangePassword)
+  }
+
 }
