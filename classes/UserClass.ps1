@@ -76,7 +76,7 @@ class User {
 
   [void] SetHomeDir([string] $DirName) {
     if($this.GetHomeDir() -ne $DirName){
-      Rename-Item $this.HomeDirPath $DirName -ErrorAction Stop
+      Rename-Item $this.GetHomeDir() $DirName -ErrorAction Stop
       Set-Itemproperty -path $this._registry -Name 'ProfileImagePath' -value $DirName -ErrorAction Stop
       $this.HomeDirPath = $(Get-ItemProperty -path $this._registry).ProfileImagePath
     }
@@ -102,5 +102,10 @@ class User {
 
   [void] SetPassword([string] $Password) {
     $this.SetPassword($(ConvertTo-SecureString $Password -AsPlainText -Force))
+  }
+
+  [void] Remove() {
+    Get-LocalUser -Name $this.GetUserName() | Remove-LocalUser
+    $this._self = $NULL
   }
 }
