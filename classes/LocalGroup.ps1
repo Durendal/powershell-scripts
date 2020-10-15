@@ -6,16 +6,20 @@ $Path = $Path[0..($Path.Length-3)] -join "\"
 class LocalGroup {
   [object] $_SID
   hidden [void] Init([string] $Identifier, [string] $Description) {
-    if($Description.Length > 0) {
+    Write-Host "Description Length: $($Description.Length)"
+    if($Description.Length -gt 0) {
+
       New-LocalGroup -Name $Identifier -ErrorAction Stop
-      $this._SID = $(Get-LocalGroup -Name $Identifier).SID
+      $this._SID = Get-LocalGroup -Name $Identifier | select -ExpandProperty SID
     } else {
       if($(Select-String -Pattern 'S-\d-(?:\d+-){1,14}\d+' -InputObject $Identifier).Matches) {
-        $this._SID = $(Get-LocalGroup -SID $Identifier).SID
+        $this._SID = Get-LocalGroup -SID $Identifier | select -ExpandProperty SID
       } else {
-        $this._SID = $(Get-LocalGroup -Name $Identifier).SID
+        $this._SID = Get-LocalGroup -Name $Identifier | select -ExpandProperty SID
       }
     }
+
+    #$this._SID = Get-LocalGroup -Name $Identifier | select -ExpandProperty SID
   }
 
   LocalGroup([string] $Identifier) {
@@ -91,11 +95,11 @@ class LocalGroup {
   }
 
   [void] Rename([string] $NewName) {
-    Rename-LocalGroup -Name $this.GetGroupName() -NewName $NewName -Confirm
+    Rename-LocalGroup -Name $this.GetGroupName() -NewName $NewName
   }
 
   [void] Delete() {
-    Remove-LocalGroup -Name $this.GetGroupName() -Confirm
+    Remove-LocalGroup -Name $this.GetGroupName()
   }
 
   [string[]] static GetGroups() {
