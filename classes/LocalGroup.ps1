@@ -11,23 +11,18 @@ class LocalGroup {
       $this._SID = $(Get-LocalGroup -Name $Identifier).SID
     } else {
       if($(Select-String -Pattern 'S-\d-(?:\d+-){1,14}\d+' -InputObject $Identifier).Matches) {
-        Write-Host $(Get-LocalGroup -SID $Identifier).SID
         $this._SID = $(Get-LocalGroup -SID $Identifier).SID
       } else {
-        Write-Host $(Get-LocalGroup -Name $Identifier).SID
         $this._SID = $(Get-LocalGroup -Name $Identifier).SID
       }
     }
   }
 
   LocalGroup([string] $Identifier) {
-    Write-Host "Identifier: $Identifier"
     $this.Init($Identifier, "")
   }
 
   LocalGroup([string] $Identifier, [string] $Description) {
-    Write-Host "Identifier: $Identifier"
-    Write-Host "Description: $Description"
     $this.Init($Identifier, $Description)
   }
 
@@ -36,8 +31,6 @@ class LocalGroup {
   }
 
   [string] GetGroupName() {
-    $s = $this.GetSID()
-    Write-Output "SID: $s"
     return $(Get-LocalGroup -SID $this.GetSID() | select -ExpandProperty Name)
   }
 
