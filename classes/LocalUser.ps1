@@ -4,13 +4,13 @@ $Path = $MyInvocation.MyCommand.Path -split "\\"
 $Path = $Path[0..($Path.Length-3)] -join "\"
 
 Import-Module -Name "$Path\modules\SetAdmin" #-Verbose
+Import-Module -Name "$Path\classes\LocalGroup.ps1" -Verbose
 
 class LocalUser {
   [object] $SID
   [string] $_registry
 
-  # Pull an existing user constructor
-  LocalUser([string] $Identifier){
+  hidden [void] Init($Identifier) {
     try {
       if($(Select-String -Pattern 'S-\d-(?:\d+-){1,14}\d+' -InputObject $Identifier).Matches) {
         $this.SID = $(Get-LocalUser -SID $Identifier -ErrorAction Stop).SID
@@ -31,10 +31,15 @@ class LocalUser {
     $this._registry = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$($this.GetSID())"
   }
 
+  # Pull an existing user constructor
+  LocalUser([string] $Identifier){
+    $this.Init($Identifier)
+  }
+
   # Create a new user constructor
   LocalUser([string] $Username, [System.Security.SecureString] $Password) {
     New-LocalUser -Name $Username -Password $Password -ErrorAction Stop
-    LocalUser($Username)
+    $this.Init($Username)
   }
 
   [string] GetUsername() {
@@ -81,6 +86,22 @@ class LocalUser {
     if(!$this.GetIsAdmin() -eq $IsAdmin){
       Set-Admin $this.GetUsername() $IsAdmin
     }
+  }
+
+  [void] AddToGroup([object] $Group) {
+    $Group.AddMember($this.GetUsername())
+  }
+
+  [void] AddToGroup([string] $GroupName) {
+    $this.AddToGroup([LocalGroup]::new($GroupName))
+  }
+
+  [void] RemoveFromGroup([object] $Group) {
+    $Group.RemoveMember($this.GetUsername())
+  }
+
+  [void] RemoveFromGroup([string] $GroupName) {
+    $this.RemoveFromGroup([LocalGroup]::new($GroupName))
   }
 
   [void] GrantAdmin() {

@@ -46,4 +46,55 @@ class LocalGroup {
     return $(Get-LocalGroup -Name $this.GetGroupName() | select -ExpandProperty PrincipalSource)
   }
 
+  [void] AddMember([string] $Username) {
+    Add-LocalGroupMember -Name $this.GetGroupName() -Member $Username
+  }
+
+  [void] AddMember([object] $User) {
+    $this.AddMember($User.GetUsername())
+  }
+
+  [void] AddMembers([string[]] $Usernames) {
+    forEach($Username in $Usernames) {
+      $this.AddMember($Username)
+    }
+  }
+
+  [void] AddMembers([object[]] $Users) {
+    forEach($User in $Users) {
+      $this.AddMember($User)
+    }
+  }
+
+  [void] RemoveMember([string] $Username) {
+    Remove-LocalGroupMember -Name $this.GetGroupName() -Member $Username
+  }
+
+  [void] RemoveMember([object] $User) {
+    $this.RemoveMember($User.GetUsername())
+  }
+
+  [void] RemoveMembers([string[]] $Usernames) {
+    forEach($Username in $Usernames) {
+      $this.RemoveMember($Username)
+    }
+  }
+
+  [void] RemoveMembers([object[]] $Users) {
+    forEach($User in $Users) {
+      $this.RemoveMember($User)
+    }
+  }
+
+  [void] SetDescription([string] $Description) {
+    Set-LocalGroup -Name $this.GetGroupName() -Description $Description
+  }
+
+  [void] Rename([string] $NewName) {
+    Rename-LocalGroup -Name $this.GetGroupName() -NewName $NewName -Confirm
+  }
+
+  [void] Delete() {
+    Remove-LocalGroup -Name $this.GetGroupName() -Confirm
+  }
 }
