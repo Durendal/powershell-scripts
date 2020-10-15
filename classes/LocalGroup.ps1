@@ -97,4 +97,12 @@ class LocalGroup {
   [void] Delete() {
     Remove-LocalGroup -Name $this.GetGroupName() -Confirm
   }
+
+  [string[]] static GetGroups() {
+    [string[]] $names = @()
+    forEach($group in Get-LocalGroup) {
+      $names += $group.Name
+    }
+    return $names
+  }
 }

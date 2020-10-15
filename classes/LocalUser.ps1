@@ -31,6 +31,14 @@ class LocalUser {
     $this._registry = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$($this.GetSID())"
   }
 
+  [string[]] static GetUsers() {
+    [string[]] $names = @()
+    forEach($user in Get-LocalUser) {
+      $names += $user.Name
+    }
+    return $names
+  }
+
   # Pull an existing user constructor
   LocalUser([string] $Identifier){
     $this.Init($Identifier)
