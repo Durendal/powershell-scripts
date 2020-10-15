@@ -6,9 +6,7 @@ $Path = $Path[0..($Path.Length-3)] -join "\"
 class LocalGroup {
   [object] $_SID
   hidden [void] Init([string] $Identifier, [string] $Description) {
-    Write-Host "Description Length: $($Description.Length)"
     if($Description.Length -gt 0) {
-
       New-LocalGroup -Name $Identifier -ErrorAction Stop
       $this._SID = Get-LocalGroup -Name $Identifier | select -ExpandProperty SID
     } else {
@@ -18,8 +16,6 @@ class LocalGroup {
         $this._SID = Get-LocalGroup -Name $Identifier | select -ExpandProperty SID
       }
     }
-
-    #$this._SID = Get-LocalGroup -Name $Identifier | select -ExpandProperty SID
   }
 
   LocalGroup([string] $Identifier) {
