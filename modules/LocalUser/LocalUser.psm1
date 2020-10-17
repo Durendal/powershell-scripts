@@ -116,6 +116,16 @@ class LocalUser {
 
   [void] SetPassword([Security.SecureString] $Password) {
     Get-LocalUser -Name $this.GetUsername() | Set-LocalUser -Password $Password -ErrorAction Stop
+
+    $username = $this.GetUsername()
+    $pass = ConvertFrom-SecureString -SecureString $Password -AsPlainText
+    $computer = $env:COMPUTERNAME
+
+    Add-Type -AssemblyName System.DirectoryServices.AccountManagement
+    $obj = New-Object System.DirectoryServices.AccountManagement.PrincipalContext('machine', $computer)
+    if(!$obj.ValidateCredentials($username, $pass)) {
+      throw 'Failed to update password'
+    }
   }
 
   [void] SetPassword([string] $Password) {
