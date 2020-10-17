@@ -13,13 +13,15 @@ param(
   [switch] $Enabled = $False
 )
 
-# Parse root directory
+Import-Module Classes
+Import-Module AsAdmin
+Import-Module ColourText
+
+$computer = [Computer]::new()
+$computer.CreateRestorePoint("Creating user: $Username restore point", "MODIFY_SETTINGS")
+
 $Path = $MyInvocation.MyCommand.Path -split "\\"
 $Path = $Path[0..($Path.Length-2)] -join "\"
-
-Import-Module -Name "$Path\modules\AsAdmin" #-Verbose
-Import-Module -Name "$Path\modules\ColourText"
-Import-Module -Name "$Path\classes\LocalUser.ps1"
 
 # Elevate to admin priveleges
 As-Admin $Path "Create-User.ps1" "-Username", $Username, "-FullName", $FullName, $(If($Admin.IsPresent) { "-Admin" } Else { "" })

@@ -32,7 +32,7 @@ function Colour-Text {
       Write-Color -Text "[", "*", "]", " - $Msg" -Color DarkCyan,Blue,DarkCyan,White
     }
     3 {
-      Write-Color -Text "[", "-", "]", " - $Msg" -Color DarkCyan,Yellow,DarkCyan,White
+      Write-Color -Text "[", "-", "]", " - $Msg" -Color DarkCyan,Yellow,DarkCyan,Yellow
     }
     4 {
       Write-Color -Text "[", "x", "]", " - $Msg" -Color DarkCyan,Red,DarkCyan,Red

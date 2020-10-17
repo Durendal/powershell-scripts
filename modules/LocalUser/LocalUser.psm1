@@ -1,10 +1,4 @@
- Start-Sleep -Milliseconds 1
-# Parse root directory
-$Path = $MyInvocation.MyCommand.Path -split "\\"
-$Path = $Path[0..($Path.Length-3)] -join "\"
-
-Import-Module -Name "$Path\modules\SetAdmin" #-Verbose
-Import-Module -Name "$Path\classes\LocalGroup.ps1" -Verbose
+using module ..\LocalGroup
 
 class LocalUser {
   [object] $SID

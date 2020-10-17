@@ -1,8 +1,3 @@
-Start-Sleep -Milliseconds 1
-# Parse root directory
-$Path = $MyInvocation.MyCommand.Path -split "\\"
-$Path = $Path[0..($Path.Length-3)] -join "\"
-
 class Computer {
   [string] $SID
 

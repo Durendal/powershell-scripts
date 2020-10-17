@@ -8,26 +8,30 @@
       The home directory is changed to C:\Users\{new username}
       If any stage other than password fails, the previous changes will be reverted.
 #>
+using namespace Classes
+[CmdletBinding()]
 param(
   $OldUserName = $env:UserName,
   [Parameter(Mandatory=$true)]
-  $NewUserName
+  $NewUserName,
+  [switch]$Password=$False
 )
 
-# Parse root directory
-$Path = $MyInvocation.MyCommand.Path
-$Path = $Path -split "\\"
+Import-Module SetAdmin -Force
+Import-Module Classes -Force
+Import-Module ColourText -Force
+
+$Path = $MyInvocation.MyCommand.Path -split "\\"
 $Path = $Path[0..($Path.Length-2)] -join "\"
-Import-Module -Name "$Path\classes\LocalUser.ps1"
-Import-Module -Name "$Path\modules\AsAdmin"
-Import-Module -Name "$Path\modules\ColourText"
+$computer = [Computer]::new()
+$computer.CreateRestorePoint("Changing username and homedirectory restore point", "MODIFY_SETTINGS")
 
 # Elevate Priveleges
-As-Admin $Path "Change-Username.ps1" "-OldUserName", $OldUserName, "-NewUserName", $NewUserName
+As-Admin $Path "Change-Username.ps1" "-OldUserName", $OldUserName, "-NewUserName", $NewUserName, $(if($Password.IsPresent) {"-Password"} else {""})
 
-$Password = Read-Host "Enter Password" -AsSecureString
+
 $user = [LocalUser]::new($OldUserName)
-Colour-Text 1 "Beginning user-migration sequence for Username: $OldUserName SID: $UserSID, one moment..."
+Colour-Text 1 "Beginning user-migration sequence for Username: $OldUserName SID: $($user.GetSID()), one moment..."
 
 try {
   $user.SetUsername($NewUserName)
@@ -45,11 +49,15 @@ catch
   $user.SetUsername($OldUserName)
   throw "Failed to change users home directory, reverting changes."
 }
-try {
-  $user.SetPassword($Password)
-}
-catch{
-  throw "Failed to update password. Login with old password and change manually."
+if($Password.IsPresent)
+{
+  try {
+    $Pass = Read-Host "Enter Password" -AsSecureString
+    $user.SetPassword($Pass)
+  }
+  catch{
+    throw "Failed to update password. Login with old password and change manually."
+  }
 }
 
 Colour-Text 1 "Finished. Log out and back in with $NewUserName"
