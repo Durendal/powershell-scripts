@@ -8,7 +8,9 @@
       The home directory is changed to C:\Users\{new username}
       If any stage other than password fails, the previous changes will be reverted.
 #>
-using namespace Classes
+using module Computer;
+using module LocalUser;
+
 [CmdletBinding()]
 param(
   $OldUserName = $env:UserName,
@@ -18,14 +20,14 @@ param(
 )
 
 Import-Module SetAdmin -Force
-Import-Module Classes -Force
 Import-Module ColourText -Force
 
 $Path = $MyInvocation.MyCommand.Path -split "\\"
 $Path = $Path[0..($Path.Length-2)] -join "\"
 $computer = [Computer]::new()
+Write-Output "Computer: ${$computer.GetHostName()} Creating restore point..."
 $computer.CreateRestorePoint("Changing username and homedirectory restore point", "MODIFY_SETTINGS")
-
+Write-Output "Restore point created..."
 # Elevate Priveleges
 As-Admin $Path "Change-Username.ps1" "-OldUserName", $OldUserName, "-NewUserName", $NewUserName, $(if($Password.IsPresent) {"-Password"} else {""})
 
