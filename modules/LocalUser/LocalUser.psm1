@@ -79,7 +79,12 @@ class LocalUser {
 
   [void] SetHomeDir([string] $DirName) {
     if($this.GetHomeDir() -ne $DirName){
-      Rename-Item $this.GetHomeDir() $DirName -ErrorAction Stop
+      #Rename-Item $this.GetHomeDir() $DirName -ErrorAction Stop
+      if(!Test-Path $DirName){
+        $name = $($this.GetHomeDir() -split "\\")[-1]
+        New-Item -Path "C:\Users" -Name $name -ItemType 'directory'
+      }
+      Copy-Item $this.GetHomeDir() -Destination $DirName -Recurse -Force
       Set-Itemproperty -path $this._registry -Name 'ProfileImagePath' -value $DirName -ErrorAction Stop
     }
   }
